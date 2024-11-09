@@ -1,36 +1,44 @@
 import { User, UserStore, UserUpdate } from "./user.d";
+import { UserDb } from './user.database';
 
-let users: User[] = []
-
-const getAll = (): User[] => {
+const getAll = async (): Promise<User[]> => {
+  const users = await UserDb.find();
   return users
 }
 
-const getById = (id: number): User | undefined => {
-  return users.find(user => user.id === id)
+const getById = async (_id: string): Promise<User | null> => {
+  const user = await UserDb.findOne({
+    _id
+  });
+
+  return user
 }
 
-const store = (params: UserStore) => {
-  users.push({
-    ...params,
-    id: users.length + 1
-  })
+const store = async (params: UserStore): Promise<User> => {
+  const user = new UserDb()
+  user.email = params.email
+  user.password = params.password
+  const result = await user.save()
+
+  return result
 }
 
-const update = (id: number, params: UserUpdate) => {
-  users = users.map(user => {
-    if (user.id === id) {
-      return {
-        ...user,
-        ...params,
-      }
-    }
-    return user
-  })
+const update = async (_id: string, params: UserUpdate): Promise<{
+  modifiedCount: number
+}> => {
+  const user = await UserDb.updateOne({
+    _id
+  },
+  params)
+
+  return user
 }
 
-const destroy = (id: number) => {
-  users = users.filter(user => user.id !== id)
+const destroy = async (_id: string): Promise<{
+  deletedCount: number
+}> => {
+  const result = await UserDb.deleteOne({ _id })
+  return result
 }
 
 export default {

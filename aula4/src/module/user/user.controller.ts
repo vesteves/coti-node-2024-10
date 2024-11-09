@@ -5,54 +5,57 @@ import userModel from './user.model'
 
 export const router = Router()
 
-router.get('/', (_req: Request, res: Response) => {
-  const result = userModel.getAll()
+router.get('/', async (_req: Request, res: Response) => {
+  const result = await userModel.getAll()
   res.json(result)
 })
 
-router.get('/:id', (req: Request, res: Response) => {
-  const result = userModel.getById(Number(req.params.id))
+router.get('/:id', async (req: Request, res: Response) => {
+  const result = await userModel.getById(req.params.id)
   res.json(result)
 })
 
-router.post('/', (req: Request, res: Response) => {
+router.post('/', async (req: Request, res: Response) => {
   req.body.password = bcrypt.hashSync(req.body.password, 10);
 
-  const result = userModel.store(req.body as UserStore)
+  const result = await userModel.store(req.body as UserStore)
+  console.log(result)
   res.json({
     msg: "Usuario cadastrado"
   })
 })
 
-router.put('/:id', (req: Request, res: Response) => {
+router.put('/:id', async (req: Request, res: Response) => {
   if (req.body.password) {
     req.body.password = bcrypt.hashSync(req.body.password, 10);
   }
 
-  const result = userModel.update(Number(req.params.id), req.body as UserUpdate)
+  const result = await userModel.update(req.params.id, req.body as UserUpdate)
+
   res.json({
     msg: 'Usuario atualizado'
   })
+  return
 })
 
-router.delete('/:id', (req: Request, res: Response) => {
-  const result = userModel.destroy(Number(req.params.id))
+router.delete('/:id', async (req: Request, res: Response) => {
+  const result = await userModel.destroy(req.params.id)
   res.json({
     msg: 'Usuario removido!'
   })
 })
 
-router.post('/login', (req: Request, res: Response) => {
-  const user = userModel.getAll()
+// router.post('/login', (req: Request, res: Response) => {
+//   const user = userModel.getAll()
 
-  if (user.length === 0) {
-    res.json({
-      msg: 'Usuário não encontrado'
-    })
-  }
-  const result = bcrypt.compareSync(req.body.password, user[0].password);
+//   if (user.length === 0) {
+//     res.json({
+//       msg: 'Usuário não encontrado'
+//     })
+//   }
+//   const result = bcrypt.compareSync(req.body.password, user[0].password);
   
-  res.json(result)
-})
+//   res.json(result)
+// })
 
 export default router

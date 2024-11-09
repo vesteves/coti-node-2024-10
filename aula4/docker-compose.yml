@@ -1,0 +1,18 @@
+services:
+  db:
+    image: mongo
+    container_name: projeto-db
+    restart: unless-stopped
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: username
+      MONGO_INITDB_ROOT_PASSWORD: password
+    ports:
+      - 27017:27017
+    networks:
+      - projeto-network
+    volumes:
+      - ./data:/data/db
+
+networks:
+  projeto-network:
+    driver: bridge
