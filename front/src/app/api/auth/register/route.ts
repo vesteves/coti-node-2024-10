@@ -6,7 +6,7 @@ export async function POST(req: Request) {
         'Content-Type': 'application/json',
         Accept: 'application/json',
       },
-      body: await req.json()
+      body: JSON.stringify(await req.json())
     }
   )
   const data = await res.json()

@@ -21,13 +21,19 @@ export const RegisterPage = () => {
   }
 
   const onSubmit = async () => {
-    const response = await fetch('/auth/register', {
+    const response = await fetch('/api/auth/register', {
       method: 'POST',
       body: JSON.stringify(form)
     })
     const responseJson = await response.json()
 
-    console.log('responseJson', responseJson.data.token)
+    if(responseJson.data.msg) {
+      alert(responseJson.data.msg)
+    }
+
+    if(responseJson.data.token) {
+      alert(responseJson.data.token)
+    }
   }
 
   return (
