@@ -19,7 +19,6 @@ router.post('/', async (req: Request, res: Response) => {
   req.body.password = bcrypt.hashSync(req.body.password, 10);
 
   const result = await userModel.store(req.body as UserStore)
-  console.log(result)
   res.json({
     msg: "Usuario cadastrado"
   })
@@ -44,18 +43,5 @@ router.delete('/:id', async (req: Request, res: Response) => {
     msg: 'Usuario removido!'
   })
 })
-
-// router.post('/login', (req: Request, res: Response) => {
-//   const user = userModel.getAll()
-
-//   if (user.length === 0) {
-//     res.json({
-//       msg: 'Usuário não encontrado'
-//     })
-//   }
-//   const result = bcrypt.compareSync(req.body.password, user[0].password);
-  
-//   res.json(result)
-// })
 
 export default router

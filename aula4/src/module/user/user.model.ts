@@ -14,6 +14,14 @@ const getById = async (_id: string): Promise<User | null> => {
   return user
 }
 
+const getByEmail = async (email: string): Promise<User | null> => {
+  const user = await UserDb.findOne({
+    email
+  });
+
+  return user
+}
+
 const store = async (params: UserStore): Promise<User> => {
   const user = new UserDb()
   user.email = params.email
@@ -44,6 +52,7 @@ const destroy = async (_id: string): Promise<{
 export default {
   getAll,
   getById,
+  getByEmail,
   store,
   update,
   destroy,
