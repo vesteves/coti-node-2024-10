@@ -4,13 +4,14 @@ import express from 'express'
 import userRouter from './module/user/user.controller'
 import authRouter from './module/auth/auth.controller'
 import mongoose from 'mongoose'
+import authenticateMiddleware from './middleware/authenticate'
 
 const app = express()
 
 app.use(express.json())
 
 // rotas
-app.use('/user', userRouter)
+app.use('/user', authenticateMiddleware, userRouter)
 app.use('/auth', authRouter)
 
 // http://localhost:8000/auth/register

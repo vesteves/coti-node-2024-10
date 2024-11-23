@@ -1,24 +1,26 @@
 import bcrypt from 'bcrypt'
 import { Router, Request, Response } from 'express'
 import { UserStore, UserUpdate } from './user.d'
-import userModel from './user.model'
+import userRepository from './user.repository'
+import validateSchema from '../../middleware/validateSchema'
+import { createUserSchema } from './user.schema'
 
 export const router = Router()
 
 router.get('/', async (_req: Request, res: Response) => {
-  const result = await userModel.getAll()
+  const result = await userRepository.getAll()
   res.json(result)
 })
 
 router.get('/:id', async (req: Request, res: Response) => {
-  const result = await userModel.getById(req.params.id)
+  const result = await userRepository.getById(req.params.id)
   res.json(result)
 })
 
-router.post('/', async (req: Request, res: Response) => {
-  req.body.password = bcrypt.hashSync(req.body.password, 10);
+router.post('/', validateSchema(createUserSchema), async (_req: Request, res: Response) => {
+  res.locals.validated.password = bcrypt.hashSync(res.locals.validated.password, 10);
 
-  const result = await userModel.store(req.body as UserStore)
+  const result = await userRepository.store(res.locals.validated as UserStore)
   res.json({
     msg: "Usuario cadastrado"
   })
@@ -29,7 +31,7 @@ router.put('/:id', async (req: Request, res: Response) => {
     req.body.password = bcrypt.hashSync(req.body.password, 10);
   }
 
-  const result = await userModel.update(req.params.id, req.body as UserUpdate)
+  const result = await userRepository.update(req.params.id, req.body as UserUpdate)
 
   res.json({
     msg: 'Usuario atualizado'
@@ -38,7 +40,7 @@ router.put('/:id', async (req: Request, res: Response) => {
 })
 
 router.delete('/:id', async (req: Request, res: Response) => {
-  const result = await userModel.destroy(req.params.id)
+  const result = await userRepository.destroy(req.params.id)
   res.json({
     msg: 'Usuario removido!'
   })

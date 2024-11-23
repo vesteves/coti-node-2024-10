@@ -1,15 +1,18 @@
 import bcrypt from 'bcrypt'
 import jwt from 'jsonwebtoken'
-import { Router, Request, Response } from 'express'
+import { Router, Request, Response, NextFunction } from 'express'
 import { UserStore } from '../user/user.d'
-import userModel from '../user/user.model'
+import userRepository from '../user/user.repository'
+import authenticateMiddleware from '../../middleware/authenticate'
+import { loginSchema, registerSchema } from './auth.schema'
+import validateSchemaMiddleware from '../../middleware/validateSchema'
 
 export const router = Router()
 
-router.post('/register', async (req: Request, res: Response) => {
+router.post('/register', validateSchemaMiddleware(registerSchema), async (req: Request, res: Response) => {
   req.body.password = bcrypt.hashSync(req.body.password, 10);
 
-  const result = await userModel.store(req.body as UserStore)
+  const result = await userRepository.store(req.body as UserStore)
 
   const token = jwt.sign({
     id: result._id
@@ -21,48 +24,19 @@ router.post('/register', async (req: Request, res: Response) => {
   })
 })
 
-router.get('/me', async (req: Request, res: Response) => {
-  // req.body
-  // req.params
-  // req.query
-  // req.headers
-
-  if(!req.headers.authorization) {
-    res.json({
-      msg: 'Token não encontrado na requisição'
-    })
-    return
-  }
-
-  // req.headers.authorization = Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY3MzdkMDNjM2FjNjM1MDI2MGI5YzFhNSIsImlhdCI6MTczMTcxMTAzNn0.xx615BHQyzEztZCJelEio2ygXbJ4hQT5mViPD2_2S6c
-  // split(' ') = transforma uma string em um array criando ponteiros a partir de um ou mais caracteres passados como parâmetro. Neste caso, utilizando um ESPAÇO VAZIO como parâmetro do método split()
-  // ponteiro 0 = Bearer
-  // ponteiro 1 = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY3MzdkMDNjM2FjNjM1MDI2MGI5YzFhNSIsImlhdCI6MTczMTcxMTAzNn0.xx615BHQyzEztZCJelEio2ygXbJ4hQT5mViPD2_2S6c
-  const token = req.headers.authorization.split(' ')[1]
-
-  const result = jwt.verify(token, process.env.JWT_SECRET || '')
-
-  if (typeof(result) !== 'object') {
-    res.json({
-      msg: 'Token inválido',
-    })
-    return
-  }
-
-  const user = await userModel.getById(result.id)
-    
-    res.json({
-      msg: 'Usuário identificado',
-      user
-    })
+router.get('/me', authenticateMiddleware, async (_req: Request, res: Response) => {
+  res.json({
+    msg: 'Usuário identificado',
+    user: res.locals.user
+  })
 })
 
-router.post('/login', async (req: Request, res: Response) => {
+router.post('/login', validateSchemaMiddleware(loginSchema), async (req: Request, res: Response) => {
   // TODO receber os dados do corpo da requisição
   const body = req.body
 
   // TODO verificar se existe um usuário na minha base de dados contendo o e-mail que veio pelo body requisition
-  const result = await userModel.getByEmail(body.email)
+  const result = await userRepository.getByEmail(body.email)
 
   // TODO validar o banco de dados retornou um usuário
   if(!result) {
