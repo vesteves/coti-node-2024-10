@@ -3,6 +3,8 @@ dotenv.config()
 import express from 'express'
 import userRouter from './module/user/user.controller'
 import authRouter from './module/auth/auth.controller'
+import categoryRouter from './module/category/category.controller'
+import productRouter from './module/product/product.controller'
 import mongoose from 'mongoose'
 import authenticateMiddleware from './middleware/authenticate'
 
@@ -12,6 +14,8 @@ app.use(express.json())
 
 // rotas
 app.use('/user', authenticateMiddleware, userRouter)
+app.use('/category', authenticateMiddleware, categoryRouter)
+app.use('/product', authenticateMiddleware, productRouter)
 app.use('/auth', authRouter)
 
 // http://localhost:8000/auth/register

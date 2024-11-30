@@ -1,16 +1,13 @@
 import { Types } from "mongoose"
+import { z } from 'zod'
+import { createUserSchema, updateUserSchema } from './user.schema'
 
 export interface Base {
   _id: Types.ObjectId
 }
 
-export interface UserBase {
-  email: string
-  password: string
-}
+export type UserStore = z.infer<typeof createUserSchema>
 
-export type User = UserBase & Base
+export type UserUpdate = z.infer<typeof updateUserSchema>
 
-export type UserStore = UserBase
-
-export type UserUpdate = Partial<UserBase>
+export type User = UserStore & Base
