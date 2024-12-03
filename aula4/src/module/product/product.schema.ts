@@ -1,4 +1,5 @@
 import { z } from 'zod'
+import { isValidObjectId } from 'mongoose';
 
 export const createProductSchema = z.object({
   name: z.string({
@@ -20,11 +21,13 @@ export const createProductSchema = z.object({
   }).int({
     message: 'O campo desconto deve conter um número inteiro',
   }).optional(),
+  category: z.custom((val) => isValidObjectId(val), {
+    message: 'O campo category deve ser um ObjectId válido',
+  }),
 })
 
 export const updateProductSchema = z.object({
   name: z.string({
-    required_error: 'O nome é obrigatório',
     message: 'O campo nome deve conter letras e/ou números',
   }).optional(),
   price: z.number({
@@ -37,4 +40,7 @@ export const updateProductSchema = z.object({
   }).int({
     message: 'O campo desconto deve conter um número inteiro',
   }).optional(),
+  category: z.custom((val) => isValidObjectId(val), {
+    message: 'O campo category deve ser um ObjectId válido',
+  }).optional()
 })

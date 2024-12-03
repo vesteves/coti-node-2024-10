@@ -12,4 +12,13 @@ const categoriesSchema = new mongoose.Schema<Category, mongoose.Model<Category>>
   }
 })
 
+categoriesSchema.virtual('products', {
+  ref: 'products',
+  localField: '_id',
+  foreignField: 'category'
+});
+
+categoriesSchema.set('toJSON', { virtuals: true });
+categoriesSchema.set('toObject', { virtuals: true });
+
 export const CategoryModel = mongoose.model('categories', categoriesSchema)

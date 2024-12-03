@@ -2,7 +2,7 @@ import { Product, ProductStore, ProductUpdate } from "./product";
 import { ProductModel } from './product.model';
 
 const getAll = async (): Promise<Product[]> => {
-  const products = await ProductModel.find();
+  const products = await ProductModel.find().populate('category');
   return products
 }
 

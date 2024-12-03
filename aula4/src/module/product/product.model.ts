@@ -1,4 +1,4 @@
-import mongoose from "mongoose";
+import mongoose, { Schema } from "mongoose";
 import { Product } from "./product";
 
 const productsSchema = new mongoose.Schema<Product, mongoose.Model<Product>>({
@@ -16,6 +16,10 @@ const productsSchema = new mongoose.Schema<Product, mongoose.Model<Product>>({
   },
   discount: {
     type: Number,
+  },
+  category: {
+    type: Schema.Types.ObjectId,
+    ref: 'categories',
   }
 })
 

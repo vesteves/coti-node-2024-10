@@ -2,7 +2,7 @@ import { Category, CategoryStore, CategoryUpdate } from "./category";
 import { CategoryModel } from './category.model';
 
 const getAll = async (): Promise<Category[]> => {
-  const categories = await CategoryModel.find();
+  const categories = await CategoryModel.find().populate('products').lean();
   return categories
 }
 
