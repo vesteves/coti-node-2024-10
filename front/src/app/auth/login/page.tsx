@@ -7,7 +7,7 @@ interface User {
   password: string
 }
 
-export const LoginPage = () => {
+const LoginPage = () => {
   const [form, setForm] = useState<User>({
     email: '',
     password: ''
