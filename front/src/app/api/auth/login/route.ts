@@ -1,5 +1,5 @@
 export async function POST(req: Request) {
-  const res = await fetch('https://3e6d-200-159-140-2.ngrok-free.app/auth/login',
+  const res = await fetch('http://localhost:8000/auth/login',
     {
       method: 'POST',
       headers: {
